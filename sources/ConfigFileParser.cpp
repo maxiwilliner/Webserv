@@ -535,7 +535,7 @@ bool								ConfigFileParser::isDirective(const std::string &token, const std::s
 		//returns true if it is a server directive and we are in a server block. Else false
 		return (true);
 	}
-	else if ((token == "root" || token == "autoindex" || token == "allowed_methods" || token == "index" || token == "return" || token == "cgi_extension" || token == "cgi_path" || token == "upload_enable" || token == "upload_store") && block == "location")
+	else if ((token == "root" || token == "autoindex" || token == "allowed_methods" || token == "index" || token == "return" || token == "cgi_extension" || token == "cgi_path" || token == "upload_enable" || token == "upload_store" || token == "client_max_body_size") && block == "location")
 	{
 		//returns true if it is a location directive and we are in a location block. Else false
 		return (true);

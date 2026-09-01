@@ -88,20 +88,17 @@ bool				ConnectionHandler::writeResponse(const ServerConfig &server)
 		if (this->response.status_code <= 0)
 		{
 			ResponseBuilder builder;
-			if (this->request.error <= 0)
+			if (this->request.error > 0)
 			{
-				if (int(this->request.body.size()) > this->config.second.client_max_body_size)
-				{
-					this->response = ErrorHandler::generateHttpResponse(413, server);
-				}
-				else 
-				{
-					this->response = builder.generateHttpResponse(this->request, this->config);
-				}
+				this->response = ErrorHandler::generateHttpResponse(this->request.error, server);
+			}
+			else if (this->config.second.client_max_body_size >= 0 && int(this->request.body.size()) > this->config.second.client_max_body_size)
+			{
+				this->response = ErrorHandler::generateHttpResponse(413, server);
 			}
 			else 
 			{
-				this->response = ErrorHandler::generateHttpResponse(this->request.error, server);
+				this->response = builder.generateHttpResponse(this->request, this->config);
 			}
 		}
 		this->sendBuffer = this->response.build();

@@ -298,17 +298,20 @@ HttpResponse		ResponseBuilder::generateHttpResponse(const HttpRequest &request, 
 	LocationConfig	location = config.second;
 
 	//1. We check if the method is allowed. If not -> error 405
-	size_t i;
-	for (i = 0; i < location.allowed_methods.size(); i++)
+	if (!location.allowed_methods.empty())
 	{
-		if (location.allowed_methods[i] == request.method)
+		size_t i;
+		for (i = 0; i < location.allowed_methods.size(); i++)
 		{
-			break;
+			if (location.allowed_methods[i] == request.method)
+			{
+				break;
+			}
 		}
-	}
-	if (i >= location.allowed_methods.size())
-	{
-		return (ErrorHandler::generateHttpResponse(405, server));
+		if (i >= location.allowed_methods.size())
+		{
+			return (ErrorHandler::generateHttpResponse(405, server));
+		}
 	}
 	if (!location.returnDirective.empty())
 	{

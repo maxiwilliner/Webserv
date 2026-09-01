@@ -29,6 +29,11 @@ std::pair<ServerConfig, LocationConfig>		Router::route(const HttpRequest &reques
 
 	std::pair<ServerConfig, LocationConfig>		config;
 
+	if (servers.empty())
+	{
+		return (config);
+	}
+
 	//Si solo hay un servidor en la lista, usamos ese
 	if (servers.size() == 1)
 	{
@@ -38,10 +43,13 @@ std::pair<ServerConfig, LocationConfig>		Router::route(const HttpRequest &reques
 	{
 		//Si no, usamos el que server_name coincida con Host
 		std::string		hostName;
+		std::map<std::string, std::string>::const_iterator itHost = request.headers.find("Host");
+		if (itHost != request.headers.end())
+		{
+			hostName = Utils::toLowerAlphaOnly(itHost->second);
+		}
 
-		hostName = Utils::toLowerAlphaOnly(request.headers.find("Host")->second);
 		size_t i;
-	
 		for (i = 0; i < servers.size(); i++)
 		{
 			if (Utils::toLowerAlphaOnly(servers[i].server_name) == hostName)
@@ -49,10 +57,10 @@ std::pair<ServerConfig, LocationConfig>		Router::route(const HttpRequest &reques
 				config.first = servers[i];
 				break;
 			}
-			if (servers[i].server_name[0] == '*')
+			if (!servers[i].server_name.empty() && servers[i].server_name[0] == '*')
 			{
 				std::string	wildName = servers[i].server_name.substr(1);
-				if (Utils::ends_with(Utils::toLowerAlphaOnly(hostName), Utils::toLowerAlphaOnly(wildName)))
+				if (Utils::ends_with(hostName, Utils::toLowerAlphaOnly(wildName)))
 				{
 					config.first = servers[i];
 					break;
